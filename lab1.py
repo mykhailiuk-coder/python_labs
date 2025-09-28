@@ -67,9 +67,10 @@ while True:
             if word not in unique_words:
                 unique_words.append(word)
 
-        print("Unique words:")
+        print("Words without repetitions:")
         for word in unique_words:
-            print(word)
+            print(word, end = ' ')
+        print("\n")
 
     if task == 4:
         number = int(input("Enter a number: "))
