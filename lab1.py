@@ -1,4 +1,10 @@
+#Варіант 3
 from math import factorial
+
+def get_binary(n):
+    if n > 1:
+        get_binary(n // 2)
+    print(n % 2, end='')
 
 while True:
     task = int(input("Enter task: "))
@@ -66,8 +72,14 @@ while True:
             print(word)
 
     if task == 4:
-        
+        number = int(input("Enter a number: "))
+        if number < 0:
+            print("Error: number is negative")
+            break
+        print("Binary representation of", number, "is: ", end='')
+        get_binary(number)
+        print("\n")
 
     if task == 0:
         print("Exiting...")
-        exit()
+        break
