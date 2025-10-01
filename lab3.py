@@ -1,3 +1,4 @@
+#Додай валідацію вхідних даних
 def find_min_index(row):
     min_index = 0
     for i in range(1, len(row)):
@@ -105,5 +106,35 @@ while True:
                     print({i}, ".", candidate, end="\n")
                     i += 1
                 chosen_candidate = int(input("Input candidate number: "))
-                number_of_votes = int(input("Input number of votes: "))
-                
+                if chosen_candidate < 1 or chosen_candidate > len(candidates):
+                    print("Error: candidate number is out of range")
+                    exit()
+                number_of_votes = int(input("Input number of votes: "))   
+                if number_of_votes < 0:
+                    print("Error: number of votes cannot be negative")
+                    exit()
+                washington_candidates_votes[candidates[chosen_candidate - 1]] += number_of_votes
+                for candidate, votes in washington_candidates_votes.items():
+                    print(f"{candidate}: {votes} votes")
+                    max_votes = max(washington_candidates_votes.values())
+                    
+                print(f"Elected candidate")
+            elif (state == "Illinois"):
+                candidates = list(illinois_candidates_votes.keys)
+                print("Candidates in Illinois:")
+                i = 1
+                for candidate in candidates:
+                    print({i}, ".", candidate, end="\n")
+                    i += 1
+                chosen_candidate = int(input("Input candidate number: "))
+                if chosen_candidate < 1 or chosen_candidate > len(candidates):
+                    print("Error: candidate number is out of range")
+                    exit()
+                number_of_votes = int(input("Input number of votes: "))   
+                if number_of_votes < 0:
+                    print("Error: number of votes cannot be negative")
+                    exit()
+                illinois_candidates_votes[candidates[chosen_candidate - 1]] += number_of_votes
+            else:
+                print("Error: unknown state")
+                exit()
