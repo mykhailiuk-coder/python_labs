@@ -1,6 +1,7 @@
 #Додай валідацію вхідних даних
 from operator import indexOf
-
+from random import choice
+from collections import OrderedDict
 
 def find_min_index(row):
     min_index = 0
@@ -11,11 +12,21 @@ def find_min_index(row):
 
 
 while True:
-    task = int(input("Input task: "))
+    task = input("Input task: ")
+    try:
+        task = int(task)   
+    except ValueError:
+        print("Error: task is not an integer")
+        break  
+
     if task == 1:
-        n = int(input("Input n: "))
-        if type(n) != int:
+        n = input("Input n: ")
+        try:
+            n = int(n)
+        except ValueError:
             print("Error: n is not an integer")
+            break
+        n = int(n)
         if n <= 0 or n > 15:
             print("Error: n is out of range [1, 15]")
             break
@@ -49,7 +60,19 @@ while True:
                 break
 
             day = input(f"Input train#{i} arrival date: ")
-            num = int(input(f"Input train#{i} number: "))
+            try:
+                day = int(day)
+            except ValueError:
+                print("Error: day is not an integer")
+                break
+
+            num = input(f"Input train#{i} number: ")
+            try:
+                num = int(num)
+            except ValueError:
+                print("Error: number is not an integer")
+                break
+
             destination = input(f"Input train#{i} destination: ")
             departure_time = input(f"Input train#{i} departure time (HH:MM): ")
             arrival_time = input(f"Input train#{i} arrival time (HH:MM): ")
@@ -66,10 +89,14 @@ while True:
                 
             i += 1
 
-        search_day = int(input("Input day for search: "))
+        search_day = input("Input day for search: ")
+        try:
+            int(search_day)
+        except ValueError:
+            print("Error: day is not integer")
         if search_day < 1 or search_day > 31:
                 print("Error: day is out of range")
-                exit()
+                break
 
         for train in trains:
             if train["day"] == search_day:
@@ -80,82 +107,73 @@ while True:
                 print("There are no trains on")
 
     if task == 3:
-            elected_candidates = {}
-            washington_candidates_votes = {
-                "Abraham Lincoln": 0,
-                "John F. Kennedy": 0,
-                "F. D. Roosevelt": 0,
+        states_candidates = {
+            "Alabama": {
+                "Donald J. Trump": 0,
+                "Kamala D. Harris": 0,
+                "Jill Stein": 0
+            },
+            "Alaska": {
+                "Chase Oliver": 0,
+                "Cornel West": 0,
+                "Robert F. Kennedy Jr.": 0
+            },
+            "Arizona": {
+                "Randall Terry": 0, 
+                "Clifton Roberts": 0,
+                "Jasmine Sherman": 0
+            },
+            "Arkansas": {
+               "Hunter F. Roberts": 0,
+               "Michael Delaney": 0,
+               "Dennis Knickmeyer": 0
+            },
+            "California": {
+                "Joe Biden": 0,
+                "Gloria La Riva": 0,
+                "Brian Carroll": 0
             }
-            illinois_candidates_votes = {
-                "Donald Trump": 0,
-                "John Adams": 0,
-                "Thomas Jefferson": 0
-            }
-            
+        }
+
+        while True:
+            choice = input("Do you want to input votes? (y/n): ")
+            if choice not in ['y', 'n']:
+                print("Error: invalid input")
+                break
+            elif choice == 'n':
+                break
+
             state = input("Input state: ")
-            if state != "Washington" and state != "Illinois":
-                print(f"Error: there are no candidates from {state}")
-            elif (state == "Washington"):
-                candidates = list(washington_candidates_votes.keys())
-                
-                print("Candidates in Washington:")
-                i = 1
-                for candidate in candidates:
-                    print(i,".", candidate, end="\n")
-                    i += 1
-                chosen_candidate = int(input("Input candidate number: "))
-                               
-                if chosen_candidate < 1 or chosen_candidate > len(candidates):
-                    print("Error: candidate number is out of range")
-                    exit()
-                number_of_votes = int(input("Input number of votes: "))   
-                
-                if number_of_votes < 0:
-                    print("Error: number of votes cannot be negative")
-                    exit()
-                washington_candidates_votes[candidates[chosen_candidate - 1]] += number_of_votes
-                
-                for candidate, votes in washington_candidates_votes.items():
-                    print(f"{candidate}: {votes} votes")
-                
-                elected_candidate = max(washington_candidates_votes, key=washington_candidates_votes.get)
 
-                print(f"Chosen candidate from Washington: {elected_candidate}")
-                elected_candidates.append(elected_candidate)
+            if state not in states_candidates:
+                print("State is not found")
+                continue
 
-                    
-            elif (state == "Illinois"):
-                candidates = list(illinois_candidates_votes.keys)
-                
-                print("Candidates in Illinois:")
-                i = 1
-                for candidate in candidates:
-                    print(i,".", candidate, end="\n")
-                    i += 1
-
-                chosen_candidate = int(input("Input candidate number: "))
-                if chosen_candidate < 1 or chosen_candidate > len(candidates):
-                    print("Error: candidate number is out of range")
+            for candidate in states_candidates[state]:
+                votes = input(f"Input number of votes for {candidate}: ")
+                try:
+                    votes = int(votes)
+                except ValueError:
+                    print("Error: number of votes is not integer")
                     exit()
 
-                number_of_votes = int(input("Input number of votes: "))   
-                if number_of_votes < 0:
-                    print("Error: number of votes cannot be negative")
-                    exit()
+                if votes < 0:
+                    print("Error: votes cannot be negative")
+                    break
 
-                illinois_candidates_votes[candidates[chosen_candidate - 1]] += number_of_votes
-                for candidate, votes in illinois_candidates_votes.items():
-                    print(f"{candidate}: {votes} votes")
+                states_candidates[state][candidate] = votes
 
-                elected_candidate = max(washington_candidates_votes, key=washington_candidates_votes.get)
-                
-                print(f"Chosen candidate from Illinois: {elected_candidate}")
+            total_votes = {}
 
-                elected_candidates.append(elected_candidate)
+            for state in states_candidates:
+                for candidate, votes in states_candidates[state].items():
+                    if candidate not in total_votes:
+                        total_votes[candidate] = 0
+                    total_votes[candidate] += votes
 
-            else:
-                print("Error: unknown state")
-                exit()
+            print("\nTotal votes across all states:")
+            for candidate in sorted(total_votes.keys()):
+                print(f"{candidate}: {total_votes[candidate]}")
 
-            president = max(elected_candidates, key = elected_candidates.get)
-            print(f"Elected president: {president}")
+        president = max(total_votes, key=total_votes.get)
+        print("\nElected president nationwide:", president)
