@@ -2,140 +2,100 @@ from abc import ABC, abstractmethod
 import copy
 
 class Dog:
+
     def __init__(self, name, age):
         self.name = name
         self.age = age
     
     def bark(self):
-        return f"{self.name} says: Woof!"
+        print(f"{self.name} says Woof!")
     
-    def __str__(self):
-        return f"{self.name}({self.age})"
-    
-    def __repr__(self):
-        return f"<Dog name={self.name}>"
+    def get_info(self):
+        print(f"{self.name} is {self.age} years old.")
 
 class Training(ABC):
+
     @abstractmethod
     def perform_task(self):
         pass
 
 class ServiceDog(Dog, Training):
+
     def __init__(self, name, age, service_type):
         super().__init__(name, age)
         self.service_type = service_type
-    
+
     def perform_task(self):
-        return f"{self.name} is performing task: {self.service_type}."
-    
-    def assist(self):
-        return f"{self.name} is assisting with {self.service_type}."
+        print(f"{self.name} is performing: {self.service_type}.")
 
 class DogShelter:
-    def __init__(self):
-        self.dogs = []
+    def __init__(self, dogs, name, location):
+        self.dogs = dogs
         self._backup_dogs = []
-        print("Shelter created.")
+        self.name = name    
+        self.location = location
 
-    def __str__(self):
-        if not self.dogs:
-            return "DogShelter (empty)"
-        names = ', '.join([str(d) for d in self.dogs])
-        return f"DogShelter (contains: {names})"
-    
-    def _simulate_load(self, source_str: str):
-        print(f"  ...Loading from '{source_str}'...")
-        if "ERROR" in source_str:
-            raise IOError("File read error: data corrupted")
+    def _simulate_load(self):
+        print("Trying to load new data...")
         
-        new_dogs = []
-        for item in source_str.split(','):
-            name, age = item.split(':')
-            new_dogs.append(Dog(name, int(age)))
-        
-        self.dogs = new_dogs
-        print(f"  Loading successful.")
-
-    def _simulate_save(self):
-        print("  ...Attempting to save...")
-        # raise IOError("Failed to save: disk full")
-        print("  Save successful.")
+        return [Dog("Buddy", 5), Dog("Lucy", 2)] 
 
     def __enter__(self):
-        print("\n--- [ENTER] ---")
-        
+
         self._backup_dogs = copy.deepcopy(self.dogs)
-        print(f"Backup created: {self._backup_dogs}")
-        
+        print(f"Backup was made: {self._backup_dogs}")
+
         try:
-            fictional_data = "Buddy:5,Lucy:2"
-            # fictional_data = "Buddy:5,ERROR:BadData"
-            self._simulate_load(fictional_data)
-        
+
+            new_data = self._simulate_load() 
+            self.dogs = new_data
+            print(f"Successful load. Current state: {self.dogs}")
+            
         except Exception as e:
-            print(f"[ENTER] Load error: {e}. Rolling back...")
+
+            print(f"Load error: {e}. Returning to a backup...")
             self.dogs = self._backup_dogs
-            raise 
-        
+            
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print("--- [EXIT] ---")
-        
+
         if exc_type is not None:
-            print(f"Error inside 'with': {exc_value}.")
-            print("Save cancelled. Rolling back changes...")
+       
+            print(f"'with' block error: {exc_value}. Backup...")
             self.dogs = self._backup_dogs
-            print(f"State restored: {self}")
-        
+
         else:
-            try:
-                self._simulate_save()
-                print(f"Final state saved successfully: {self}")
-            
-            except Exception as e:
-                print(f"Save error: {e}.")
-                print("Rolling back changes made in 'with'...")
-                self.dogs = self._backup_dogs
-                print(f"State restored: {self}")
+
+            print("Exiting successful load.")
         
-        self._backup_dogs = []
-        
-        return True
+        self._backup_dogs = [] 
+        return True 
 
-print("--- 1. ServiceDog Test ---")
-guard_dog = ServiceDog("Rex", 4, "Security")
-print(guard_dog.bark())
-print(guard_dog.perform_task())
-print("-" * 20)
+my_service_dog = ServiceDog("Buddy", 5, "Guide")
+my_dog = Dog("Jacky", 8)
+my_shelter = DogShelter([my_service_dog, my_dog], "Favpaws", "Arkansas")
 
-shelter = DogShelter()
-shelter.dogs = [Dog("Sirko", 3)]
-print(f"Initial state: {shelter}")
+my_service_dog.get_info()
+my_dog.get_info()
+my_service_dog.bark()
+my_dog.bark()
+my_service_dog.perform_task()
 
-print("\n--- 2. 'with' Test (Success Case) ---")
+print("==========================")
+my_shelter.dogs[0].name = "ChangedName"
+print(f"Before 'with' block: {[dog.name for dog in my_shelter.dogs]}")
 try:
-    with shelter as s:
-        print("  (Inside 'with')")
-        print(f"  State on entry: {s}")
-        s.dogs.append(Dog("Polkan", 7))
-        print(f"  State after adding: {s}")
-    print(f"Final state: {shelter}")
-
-except Exception as e:
-    print(f"'with' block failed due to error: {e}")
-
-print("\n--- 3. 'with' Test (Error Inside 'with') ---")
-print(f"State before test: {shelter}")
-try:
-    with shelter as s:
-        print("  (Inside 'with')")
-        s.dogs.append(Dog("Tuz", 1))
-        print(f"  State after adding: {s}")
-        raise ValueError("Something went wrong!")
-        # s.dogs.append(Dog("Bobik", 2))
-    
-except Exception as e:
+    with my_shelter as shelter:
+        shelter.dogs[1].name = "NewName"
+        print(f"In 'with' block: {[dog.name for dog in shelter.dogs]}")
+        raise ValueError("Something went wrong")
+except ValueError as e:
     pass
 
-print(f"Final state: {shelter}")
+new_shelter = DogShelter(Dog("newbuddy", 4), Dog("newjacky", 8), "Washington")
+try:
+    with new_shelter as shelter:
+        print(f"In 'with' block: {[dog.name for dog in shelter.dogs]}")
+except Exception as e:
+    pass
