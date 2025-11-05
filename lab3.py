@@ -1,7 +1,5 @@
-#Додай валідацію вхідних даних
-from operator import indexOf
-from random import choice
-from collections import OrderedDict
+# Додай валідацію вхідних даних
+# Варіант 5
 
 def find_min_index(row):
     min_index = 0
@@ -12,39 +10,32 @@ def find_min_index(row):
 
 
 while True:
-    task = input("Input task: ")
-    try:
-        task = int(task)   
-    except ValueError:
-        print("Error: task is not an integer")
-        break  
-
+    task = int(input("Input task: "))
     if task == 1:
-        n = input("Input n: ")
-        try:
-            n = int(n)
-        except ValueError:
-            print("Error: n is not an integer")
-            break
-        n = int(n)
+        n = int(input("Input n: "))
         if n <= 0 or n > 15:
             print("Error: n is out of range [1, 15]")
             break
 
-        A = [[0]*n for i in range(n)]
+        A = [[0] * n for i in range(n)]
 
         print("Input elements: ")
         for i in range(n):
-            row = list(map(float, input().split()))
-            A.append(row)
-        
+            row = list(map(int, input().split()))
+
+            if len(row) != n:
+                print(f"Error: Row must contain {n} elements.")
+                break
+
+            A[i] = row
+
         print("Given matrix:")
         for row in A:
             print(row)
 
         for i in range(n):
-            diag_index = n - i - 1          
-            min_index = find_min_index(A[i])  
+            diag_index = n - i - 1
+            min_index = find_min_index(A[i])
             A[i][diag_index], A[i][min_index] = A[i][min_index], A[i][diag_index]
 
         print("Result:")
@@ -59,23 +50,35 @@ while True:
             if add_type != 'y':
                 break
 
-            day = input(f"Input train#{i} arrival date: ")
-            try:
-                day = int(day)
-            except ValueError:
-                print("Error: day is not an integer")
-                break
+            day = int(input(f"Input train#{i} day of arrival: "))
+            if day < 1 or day > 31:
+                print("Error: day must be between 1 and 31")
+                exit()
 
-            num = input(f"Input train#{i} number: ")
-            try:
-                num = int(num)
-            except ValueError:
-                print("Error: number is not an integer")
-                break
+            num = int(input(f"Input train#{i} number: "))
 
             destination = input(f"Input train#{i} destination: ")
-            departure_time = input(f"Input train#{i} departure time (HH:MM): ")
-            arrival_time = input(f"Input train#{i} arrival time (HH:MM): ")
+            departure_time = input(f"Input train#{i} departure time (HH:MM): ").split(":")
+            for j in range(len(departure_time)):
+                departure_time[j] = int(departure_time[j])
+            #departure_time = [int(departure_time[0]), int(departure_time[1])]
+            if departure_time[0] < 0 or departure_time[0] > 24:
+                print("Error: Departure hour time must be between 0 and 24 hours.")
+                exit()
+            if departure_time[1] < 0 or departure_time[1] > 60:
+                print("Error: Departure minute time must be between 0 and 60 minutes.")
+                exit()
+
+            arrival_time = input(f"Input train#{i} arrival time (HH:MM): ").split(":")
+            for j in range(len(arrival_time)):
+                arrival_time[j] = int(arrival_time[j])
+            # departure_time = [int(departure_time[0]), int(departure_time[1])]
+            if arrival_time[0] < 0 or arrival_time[0] > 24:
+                print("Error: Departure hour time must be between 0 and 24 hours.")
+                exit()
+            if arrival_time[1] < 0 or arrival_time[1] > 60:
+                print("Error: Departure minute time must be between 0 and 60 minutes.")
+                exit()
 
             train = {
                 "day": day,
@@ -86,25 +89,24 @@ while True:
             }
 
             trains.append(train)
-                
-            i += 1
 
-        search_day = input("Input day for search: ")
-        try:
-            int(search_day)
-        except ValueError:
-            print("Error: day is not integer")
-        if search_day < 1 or search_day > 31:
+            i += 1
+            search_day = int(input("Input day for search: "))
+            if search_day < 1 or search_day > 31:
                 print("Error: day is out of range")
                 break
 
-        for train in trains:
-            if train["day"] == search_day:
-                print(f"Train number: {train["number"]}")
-                print(f"Train destination: {train["destination"]}")
-                print("\n")
-            else:
-                print("There are no trains on")
+            for train in trains:
+                if train["day"] == search_day:
+                    search_train = train
+                else:
+                    print(f"There are no trains on day {search_day}")
+
+            for train in trains:
+                if train["day"] == search_day:
+                    print(f"Train number: {train["number"]}")
+                    print(f"Train destination: {train["destination"]}")
+                    print("\n")
 
     if task == 3:
         states_candidates = {
@@ -119,14 +121,14 @@ while True:
                 "Robert F. Kennedy Jr.": 0
             },
             "Arizona": {
-                "Randall Terry": 0, 
+                "Randall Terry": 0,
                 "Clifton Roberts": 0,
                 "Jasmine Sherman": 0
             },
             "Arkansas": {
-               "Hunter F. Roberts": 0,
-               "Michael Delaney": 0,
-               "Dennis Knickmeyer": 0
+                "Hunter F. Roberts": 0,
+                "Michael Delaney": 0,
+                "Dennis Knickmeyer": 0
             },
             "California": {
                 "Joe Biden": 0,
@@ -177,3 +179,7 @@ while True:
 
         president = max(total_votes, key=total_votes.get)
         print("\nElected president nationwide:", president)
+
+    if task == 0:
+        print("Exiting...")
+        exit()
