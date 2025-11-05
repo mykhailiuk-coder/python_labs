@@ -1,23 +1,26 @@
 from abc import ABC, abstractmethod
 import copy
 
+
 class Dog:
 
     def __init__(self, name, age):
         self.name = name
         self.age = age
-    
+
     def bark(self):
         print(f"{self.name} says Woof!")
-    
+
     def get_info(self):
         print(f"{self.name} is {self.age} years old.")
+
 
 class Training(ABC):
 
     @abstractmethod
     def perform_task(self):
         pass
+
 
 class ServiceDog(Dog, Training):
 
@@ -28,17 +31,18 @@ class ServiceDog(Dog, Training):
     def perform_task(self):
         print(f"{self.name} is performing: {self.service_type}.")
 
+
 class DogShelter:
     def __init__(self, dogs, name, location):
         self.dogs = dogs
         self._backup_dogs = []
-        self.name = name    
+        self.name = name
         self.location = location
 
     def _simulate_load(self):
         print("Trying to load new data...")
-        
-        return [Dog("Buddy", 5), Dog("Lucy", 2)] 
+
+        return [Dog("Buddy", 5), Dog("Lucy", 2)]
 
     def __enter__(self):
 
@@ -47,30 +51,31 @@ class DogShelter:
 
         try:
 
-            new_data = self._simulate_load() 
+            new_data = self._simulate_load()
             self.dogs = new_data
             print(f"Successful load. Current state: {self.dogs}")
-            
+
         except Exception as e:
 
             print(f"Load error: {e}. Returning to a backup...")
             self.dogs = self._backup_dogs
-            
+
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
 
         if exc_type is not None:
-       
+
             print(f"'with' block error: {exc_value}. Backup...")
             self.dogs = self._backup_dogs
 
         else:
 
             print("Exiting successful load.")
-        
-        self._backup_dogs = [] 
-        return True 
+
+        self._backup_dogs = []
+        return True
+
 
 my_service_dog = ServiceDog("Buddy", 5, "Guide")
 my_dog = Dog("Jacky", 8)
