@@ -1,56 +1,60 @@
+import time
+import random
+import itertools
+
+
+def is_even(combo):
+    rank1 = combo[0][0]
+    rank2 = combo[1][0]
+    return (ranks_numbers[rank1] + ranks_numbers[rank2]) % 2 == 0
+
+
 while True:
-    #Variant 6
-    task = int(input("Input task: "))
-    if task == 1:
-        F1 = r"D:\python_labs\lab4\F1.txt" 
-        F2 = r"D:\python_labs\lab4\F2.txt"
+    task = int(input("Enter task(6 or 8): "))
+    if task == 6:
+        # task 6
+        def retry(attempts, delay):
+            def decorator(func):
+                def wrapper(*args, **kwargs):
+                    for _ in range(attempts):
+                        try:
+                            return func(*args, **kwargs)
+                        except Exception as e:
+                            print(f"An error occurred: {e}. Retrying...")
+                            time.sleep(delay)
+                return wrapper
+            return decorator
 
-        f1 = open(F1, 'r')
-        f2 = open(F2, 'w')
+        @retry(attempts=3, delay=0.5)
+        def fetch_data_from_flaky_service():
+            if random.random() < 0.7:
+                raise ConnectionError("Service is unavailable")
+            return {"data": "some value"}
 
-        numbers = f1.read().split()
+        fetch_data_from_flaky_service()
 
-        print("Elements written in F2.txt:")
-        for i in range(len(numbers)):
-            try:
-                num = int(numbers[i])
-                if num < 0 and i % 2 != 0:
-                    f2.write(str(num) + " ")
-                    print(num)
-            except ValueError:
-                continue
 
-        f1.close()
-        f2.close()
-    
-    elif task == 2:
-        #Variant 8
-        s1 = int(input("Input s1: "))
-        s2 = int(input("Input s2: "))
-        k = int(input("Input k: "))
-        n = int(input("Input n: "))
-        textfile = r"D:\python_labs\lab4\text.txt"
-        txt = open(textfile, 'r')
-        lines = txt.readlines()
-        print("Lines:")
-        count = 0
-        for line in lines:
-            if count == 0:
-                print("First symbol of first line: ", line.strip()[0])
-                print("Fifth symbol of first line: ", line.strip()[4])
-                print("First 10 symbols of first line: ")
-                for i in range(10):
-                    print(line.strip()[i])
-                print(f"Symbols of first line in range [{s1}, {s2}]")
-                for i in range(s1, s2):
-                    print(line.strip()[i])
-            if count == 1:
-                print("First symbol of second line: ", line.strip()[0])
-            if count == n:
-                print(f"Symbol at index {k} in line {n}:", line.strip()[k])
-            count += 1
+    elif task == 8:
+        # task 8
+        ranks = ['10', 'J', 'Q', 'K', 'A']
+        ranks_numbers = {
+            "10": 10,
+            "J": 11,
+            "Q": 12,
+            "K": 13,
+            "A": 14
+        }
+        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 
+        deck = list(itertools.product(ranks, suits))
+        combos_iterator = itertools.combinations(deck, 2)
+
+        even_combos = list(filter(is_even, combos_iterator))
+
+        print(f"Total even combinations: {len(even_combos)}")
+        for even_combo in even_combos:
+            print(even_combo)
 
     elif task == 0:
-        print("Exiting the program.")
+        print("Exiting the program...")
         exit()
