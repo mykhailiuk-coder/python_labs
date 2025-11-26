@@ -1,23 +1,27 @@
-import numpy as np
 import csv
+import numpy as np
+import pandas as pd
 
-def create_client():
-    cities = ['Kyiv', 'Lviv', 'Odesa', 'Kharkiv']
-    return {
-        "age": np.random.randint(18, 70),
-        "city": np.random.choice(cities),
-        "total_spent": np.random.randint(500, 2000)
+cities = ["Kyiv", "Lviv", "Odesa", "Kharkiv"]
+
+def get_client():
+    new_client = {
+        "age": int(np.random.randint(18, 70)),
+        "city": str(np.random.choice(cities)),
+        "total_spent": int(np.random.randint(300, 2000))
     }
+    return new_client
 
-clients = [create_client() for _ in range(10)]
+clients = []
 
-try:
-    with open('variant_17.csv', 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file, delimiter=';')
-        writer.writerow(["Age", "City", "Total Spent"])  
+for i in range(500):
+    client = get_client()
+    clients.append(client)
 
-        for index, client in enumerate(clients, start=1):
-            writer.writerow([client['age'], client['city'], client['total_spent']])
-            print(f"Client {index}: Age={client['age']}, City={client['city']}, Total Spent={client['total_spent']}")
-except FileNotFoundError:
-    print("File was not found")
+with open("variant_17.csv", "w", newline="") as file:
+    writer = csv.writer(file, delimiter=";")
+    writer.writerow(["age", "city", "total_spent"])
+    for client in clients:
+        writer.writerow([client["age"], client["city"], client["total_spent"]])
+
+print("Written client data")
